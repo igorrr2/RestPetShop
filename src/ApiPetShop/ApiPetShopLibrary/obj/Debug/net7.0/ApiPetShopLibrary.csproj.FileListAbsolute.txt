@@ -1,0 +1,12 @@
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\bin\Debug\net7.0\ApiPetShopLibrary.deps.json
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\bin\Debug\net7.0\ApiPetShopLibrary.dll
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\bin\Debug\net7.0\ApiPetShopLibrary.pdb
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\obj\Debug\net7.0\ApiPetShopLibrary.csproj.AssemblyReference.cache
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\obj\Debug\net7.0\ApiPetShopLibrary.GeneratedMSBuildEditorConfig.editorconfig
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\obj\Debug\net7.0\ApiPetShopLibrary.AssemblyInfoInputs.cache
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\obj\Debug\net7.0\ApiPetShopLibrary.AssemblyInfo.cs
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\obj\Debug\net7.0\ApiPetShopLibrary.csproj.CoreCompileInputs.cache
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\obj\Debug\net7.0\ApiPetShopLibrary.dll
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\obj\Debug\net7.0\refint\ApiPetShopLibrary.dll
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\obj\Debug\net7.0\ApiPetShopLibrary.pdb
+C:\Igor\ProjetoPetShop\Rest\src\ApiPetShop\ApiPetShopLibrary\obj\Debug\net7.0\ref\ApiPetShopLibrary.dll
