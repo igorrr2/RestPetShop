@@ -20,7 +20,7 @@ namespace ApiPetShop.Repositories
                 using var cmd = new MySqlCommand("Usuario_Add", conexao);
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                // Saída do Id
+                
                 var idParam = new MySqlParameter("@p_Id", MySqlDbType.VarChar, 36)
                 {
                     Direction = ParameterDirection.Output

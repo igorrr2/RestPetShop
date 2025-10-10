@@ -6,5 +6,6 @@
         public string MensagemRetorno { get; set; }
         public string UsuarioNome { get; set; }
         public string TokenAutenticacao { get; set; }
+        public string UsuarioId { get; set; }
     }
 }

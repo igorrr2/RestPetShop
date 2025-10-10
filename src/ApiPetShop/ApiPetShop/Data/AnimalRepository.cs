@@ -21,7 +21,6 @@ namespace ApiPetShop.Repositories
                 using var cmd = new MySqlCommand("Animal_Add", conexao);
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                // GUID convertido para string
                 cmd.Parameters.AddWithValue("@p_Id", animal.Id.ToString());
                 cmd.Parameters.AddWithValue("@p_NomeAnimal", animal.NomeAnimal ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@p_NomeTutor", animal.NomeTutor ?? (object)DBNull.Value);
