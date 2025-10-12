@@ -43,7 +43,7 @@ namespace ApiPetShop.Repositories
             }
         }
 
-        public static Mensagem TryGet(out List<Usuario> usuarios, Guid? id = null, string login = null, string nome = null)
+        public static Mensagem TryGet(out List<Usuario> usuarios, Guid id)
         {
             usuarios = new List<Usuario>();
             try
@@ -54,7 +54,7 @@ namespace ApiPetShop.Repositories
                 using var cmd = new MySqlCommand("Usuario_Get", conexao);
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@p_Id", id?.ToString() ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@p_Id", id.ToString() ?? (object)DBNull.Value);
 
                 using var reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -181,6 +181,40 @@ namespace ApiPetShop.Repositories
                         Token = reader["Token"]?.ToString()
                     });
                 }
+
+                return new Mensagem();
+            }
+            catch (Exception ex)
+            {
+                return new Mensagem(ex.Message, ex);
+            }
+        }
+
+        public static Mensagem TryObterTodosUsuarios(out List<Usuario> usuarios)
+        {
+            usuarios = new List<Usuario>();
+            try
+            {
+                using var conexao = new MySqlConnection(Connection.PetShopConnectionString);
+                conexao.Open();
+
+                using var cmd = new MySqlCommand("SELECT * FROM Usuarios_View", conexao);
+
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    usuarios.Add(new Usuario
+                    {
+                        Id = Guid.Parse(reader["Id"].ToString()),
+                        Nome = reader["Nome"].ToString(),
+                        Login = reader["Login"].ToString(),
+                        Senha = reader["Senha"].ToString(),
+                        Token = reader["Token"]?.ToString()
+                    });
+                }
+
+                if (usuarios.Count == 0)
+                    return new Mensagem("Usuário não encontrado no banco de dados");
 
                 return new Mensagem();
             }

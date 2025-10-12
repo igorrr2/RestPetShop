@@ -24,7 +24,7 @@ namespace ApiPetShop.Controllers
                 return Ok(resposta);
             }
 
-            Mensagem mensagem = UsuarioRepository.TryGetByLogin(solicitacao.Login, out List<Usuario> usuario);
+            Mensagem mensagem = UsuarioRepository.TryGetByLogin(solicitacao.Login, out List<Models.Usuario> usuario);
 
             if (!mensagem.Sucesso)
             {
@@ -92,7 +92,7 @@ namespace ApiPetShop.Controllers
             token = solicitacao.Token;
 
 
-            Mensagem mensagem = UsuarioRepository.TryGetByToken(token, out List<Usuario> usuario);
+            Mensagem mensagem = UsuarioRepository.TryGetByToken(token, out List<Models.Usuario> usuario);
 
             if (!mensagem.Sucesso)
             {
@@ -137,7 +137,7 @@ namespace ApiPetShop.Controllers
             }
             token = solicitacao.Token;
 
-            Mensagem mensagem = UsuarioRepository.TryGetByToken(token, out List<Usuario> usuario);
+            Mensagem mensagem = UsuarioRepository.TryGetByToken(token, out List<Models.Usuario> usuario);
 
             if (!mensagem.Sucesso)
             {
@@ -149,7 +149,7 @@ namespace ApiPetShop.Controllers
             if (usuario == null || usuario.Count == 0)
             {
                 resposta.statusCode = 401;
-                resposta.MensagemRetorno = "Usuário não encontrado";
+                resposta.MensagemRetorno = "Usuário não encontrado ou não autenticado";
                 return Ok(resposta);
             }
 
@@ -181,6 +181,170 @@ namespace ApiPetShop.Controllers
             resposta.MensagemRetorno = "Senha atualizada com sucesso";
 
             return Ok(resposta);
+        }
+
+        [HttpPost("CriarUsuario")]
+        public IActionResult CriarUsuario([FromBody] CriarUsuarioSolicitacao solicitacao)
+        {
+            AlterarSenhaResposta resposta = new AlterarSenhaResposta();
+
+            if (solicitacao == null || string.IsNullOrEmpty(solicitacao.NomeUsuario) || string.IsNullOrEmpty(solicitacao.Senha) || string.IsNullOrEmpty(solicitacao.login))
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = "Informe todos os campos para criação do usuário";
+                return Ok(resposta);
+            }
+
+            Models.Usuario usuario = new Models.Usuario();
+            usuario.Nome = solicitacao.NomeUsuario;
+            usuario.Login = solicitacao.login;
+            usuario.Token = Guid.Empty.ToString();
+            Criptografia.Criptografar(solicitacao.Senha, usuario.Id, out string senhaCriptografada);
+            usuario.Senha = senhaCriptografada;
+            Mensagem mensagem = UsuarioRepository.TryAdd(usuario);
+            if (!mensagem.Sucesso)
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = mensagem.Descricao;
+                return Ok(resposta);
+            }
+
+            resposta.statusCode = 200;
+            resposta.MensagemRetorno = "Usuario cadastrado com sucesso";
+
+            return Ok(resposta);
+        }
+
+        [HttpPost("AtualizarUsuario")]
+        public IActionResult AtualizarUsuario([FromBody] AtualizarUsuarioSolicitacao solicitacao)
+        {
+            AlterarSenhaResposta resposta = new AlterarSenhaResposta();
+
+            if (solicitacao == null || string.IsNullOrEmpty(solicitacao.NomeUsuario) || string.IsNullOrEmpty(solicitacao.login) || string.IsNullOrEmpty(solicitacao.IdUsuarioAtualizar))
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = "Informe todos os campos para criação do usuário";
+                return Ok(resposta);
+            }
+            ShortGuid usuarioId = solicitacao.IdUsuarioAtualizar;
+            Mensagem mensagem = UsuarioRepository.TryGet(out List<Models.Usuario> usuario, usuarioId);
+            if (!mensagem.Sucesso)
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = mensagem.Descricao;
+                return Ok(resposta);
+            }
+            if (usuario == null || usuario.Count == 0)
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = "Usuário não encontrado no banco de dados";
+                return Ok(resposta);
+            }
+
+            usuario[0].Nome = solicitacao.NomeUsuario;
+            usuario[0].Login = solicitacao.login;
+            mensagem = UsuarioRepository.TryUpdate(usuario[0]);
+            if (!mensagem.Sucesso)
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = mensagem.Descricao;
+                return Ok(resposta);
+            }
+
+            resposta.statusCode = 200;
+            resposta.MensagemRetorno = "Usuario atualizado com sucesso";
+
+            return Ok(resposta);
+        }
+
+        [HttpPost("ResetarSenha")]
+        public IActionResult ResetarSenhaUsuario([FromBody] AtualizarUsuarioSolicitacao solicitacao)
+        {
+            AlterarSenhaResposta resposta = new AlterarSenhaResposta();
+
+            if (solicitacao == null || string.IsNullOrEmpty(solicitacao.Senha) || string.IsNullOrEmpty(solicitacao.ConfirmacaoSenha))
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = "Informe todos os campos para criação do usuário";
+                return Ok(resposta);
+            }
+            if (solicitacao.Senha != solicitacao.ConfirmacaoSenha)
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = "Senhas não conferem";
+                return Ok(resposta);
+            }
+
+            ShortGuid usuarioId = solicitacao.IdUsuarioAtualizar;
+            Mensagem mensagem = UsuarioRepository.TryGet(out List<Models.Usuario> usuario, usuarioId);
+            if (!mensagem.Sucesso)
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = mensagem.Descricao;
+                return Ok(resposta);
+            }
+            if (usuario == null || usuario.Count == 0)
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = "Usuário não encontrado no banco de dados";
+                return Ok(resposta);
+            }
+
+            Criptografia.Criptografar(solicitacao.Senha, usuario[0].Id, out string senhaCriptografada);
+            usuario[0].Senha = senhaCriptografada;
+            usuario[0].Token = Guid.Empty.ToString();
+            mensagem = UsuarioRepository.TryUpdate(usuario[0]);
+            if (!mensagem.Sucesso)
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = mensagem.Descricao;
+                return Ok(resposta);
+            }
+
+            resposta.statusCode = 200;
+            resposta.MensagemRetorno = "Senha resetada com sucesso";
+
+            return Ok(resposta);
+        }
+
+        [HttpGet("ListarUsuarios")]
+        public IActionResult ListarUsuarios()
+        {
+            UsuariosResposta resposta = new UsuariosResposta();
+
+            Mensagem mensagem = UsuarioRepository.TryObterTodosUsuarios(out List<Models.Usuario> usuario);
+            if (!mensagem.Sucesso)
+            {
+                resposta.StatusCode = 401;
+                resposta.MensagemRetorno = mensagem.Descricao;
+                return Ok(resposta);
+            }
+            if (usuario == null || usuario.Count == 0)
+            {
+                resposta.StatusCode = 401;
+                resposta.MensagemRetorno = "Usuário não encontrado no banco de dados";
+                return Ok(resposta);
+            }
+            List<ApiPetShopLibrary.Login.Usuario> usuariosCopia = usuario
+               .Select(u => new ApiPetShopLibrary.Login.Usuario
+               {
+                   Id = ToShortGuid(u.Id), // conversão Guid -> ShortGuid
+                   Nome = u.Nome,
+                   Login = u.Login,
+                   Senha = u.Senha,
+                   Token = u.Token
+               })
+               .ToList();
+
+            resposta.StatusCode = 200;
+            resposta.MensagemRetorno = "";
+            resposta.Usuarios = usuariosCopia;
+            return Ok(resposta);
+        }
+        private ShortGuid ToShortGuid(Guid id)
+        {
+            ShortGuid idShortGuid = id;
+            return idShortGuid;
         }
     }
 
