@@ -213,9 +213,6 @@ namespace ApiPetShop.Repositories
                     });
                 }
 
-                if (usuarios.Count == 0)
-                    return new Mensagem("Usuário não encontrado no banco de dados");
-
                 return new Mensagem();
             }
             catch (Exception ex)

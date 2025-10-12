@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ApiPetShopLibrary.Login
 {
-    public class AlterarSenhaResposta
+    public class RespostaGenerica
     {
         public int statusCode { get; set; }
         public string MensagemRetorno { get; set; }

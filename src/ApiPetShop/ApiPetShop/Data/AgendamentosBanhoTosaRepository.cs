@@ -115,6 +115,28 @@ namespace ApiPetShop.Data
             }
         }
 
+        public static Mensagem TryDeleteByAnimalId(Guid animalId)
+        {
+            try
+            {
+                using var conexao = new MySqlConnection(Connection.PetShopConnectionString);
+                conexao.Open();
+
+                string sql = "DELETE FROM AgendamentosBanhoTosa WHERE AnimalId = @Id";
+
+                using var cmd = new MySqlCommand(sql, conexao);
+                cmd.Parameters.Add("@Id", MySqlDbType.VarChar).Value = animalId.ToString();
+
+                int linhasAfetadas = cmd.ExecuteNonQuery();
+
+                return new Mensagem();
+            }
+            catch (Exception ex)
+            {
+                return new Mensagem(ex.Message, ex);
+            }
+        }
+
         public static Mensagem TryGetByUsuarioId(Guid usuarioId, out List<AgendamentosBanhoTosa> agendamentos)
         {
             agendamentos = new List<AgendamentosBanhoTosa>();

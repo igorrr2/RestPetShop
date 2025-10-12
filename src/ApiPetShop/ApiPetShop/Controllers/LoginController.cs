@@ -1,5 +1,7 @@
-﻿using ApiPetShop.Models;
+﻿using ApiPetShop.Data;
+using ApiPetShop.Models;
 using ApiPetShop.Repositories;
+using ApiPetShopLibrary.Animal;
 using ApiPetShopLibrary.Login;
 using Microsoft.AspNetCore.Mvc;
 using Util.Criptografia;
@@ -127,7 +129,7 @@ namespace ApiPetShop.Controllers
         [HttpPost("AlterarSenha")]
         public IActionResult AlterarSenha([FromBody] AlterarSenhaSolicitacao solicitacao)
         {
-            AlterarSenhaResposta resposta = new AlterarSenhaResposta();
+            RespostaGenerica resposta = new RespostaGenerica();
             ShortGuid token;
             if (solicitacao == null || string.IsNullOrWhiteSpace(solicitacao.Token))
             {
@@ -186,7 +188,7 @@ namespace ApiPetShop.Controllers
         [HttpPost("CriarUsuario")]
         public IActionResult CriarUsuario([FromBody] CriarUsuarioSolicitacao solicitacao)
         {
-            AlterarSenhaResposta resposta = new AlterarSenhaResposta();
+            RespostaGenerica resposta = new RespostaGenerica();
 
             if (solicitacao == null || string.IsNullOrEmpty(solicitacao.NomeUsuario) || string.IsNullOrEmpty(solicitacao.Senha) || string.IsNullOrEmpty(solicitacao.login))
             {
@@ -218,7 +220,7 @@ namespace ApiPetShop.Controllers
         [HttpPost("AtualizarUsuario")]
         public IActionResult AtualizarUsuario([FromBody] AtualizarUsuarioSolicitacao solicitacao)
         {
-            AlterarSenhaResposta resposta = new AlterarSenhaResposta();
+            RespostaGenerica resposta = new RespostaGenerica();
 
             if (solicitacao == null || string.IsNullOrEmpty(solicitacao.NomeUsuario) || string.IsNullOrEmpty(solicitacao.login) || string.IsNullOrEmpty(solicitacao.IdUsuarioAtualizar))
             {
@@ -252,7 +254,7 @@ namespace ApiPetShop.Controllers
             }
 
             resposta.statusCode = 200;
-            resposta.MensagemRetorno = "Usuario atualizado com sucesso";
+            resposta.MensagemRetorno = "Usuário atualizado com sucesso";
 
             return Ok(resposta);
         }
@@ -260,7 +262,7 @@ namespace ApiPetShop.Controllers
         [HttpPost("ResetarSenha")]
         public IActionResult ResetarSenhaUsuario([FromBody] AtualizarUsuarioSolicitacao solicitacao)
         {
-            AlterarSenhaResposta resposta = new AlterarSenhaResposta();
+            RespostaGenerica resposta = new RespostaGenerica();
 
             if (solicitacao == null || string.IsNullOrEmpty(solicitacao.Senha) || string.IsNullOrEmpty(solicitacao.ConfirmacaoSenha))
             {
@@ -319,16 +321,11 @@ namespace ApiPetShop.Controllers
                 resposta.MensagemRetorno = mensagem.Descricao;
                 return Ok(resposta);
             }
-            if (usuario == null || usuario.Count == 0)
-            {
-                resposta.StatusCode = 401;
-                resposta.MensagemRetorno = "Usuário não encontrado no banco de dados";
-                return Ok(resposta);
-            }
+           
             List<ApiPetShopLibrary.Login.Usuario> usuariosCopia = usuario
                .Select(u => new ApiPetShopLibrary.Login.Usuario
                {
-                   Id = ToShortGuid(u.Id), // conversão Guid -> ShortGuid
+                   Id = ToShortGuid(u.Id), 
                    Nome = u.Nome,
                    Login = u.Login,
                    Senha = u.Senha,
@@ -341,6 +338,63 @@ namespace ApiPetShop.Controllers
             resposta.Usuarios = usuariosCopia;
             return Ok(resposta);
         }
+
+        [HttpPost("ApagarUsuario")]
+        public IActionResult ApagarUsuario([FromBody] AtualizarUsuarioSolicitacao solicitacao)
+        {
+            RespostaGenerica resposta = new RespostaGenerica();
+            Mensagem mensagem = new Mensagem();
+
+            if (solicitacao == null || string.IsNullOrEmpty(solicitacao.IdUsuarioAtualizar))
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = "Informe todos os campos para criação do usuário";
+                return Ok(resposta);
+            }
+            ShortGuid usuarioId = solicitacao.IdUsuarioAtualizar;
+
+            mensagem = AnimalRepository.TryGetByUsuarioId(usuarioId, out List<Animal> animais);
+            if (!mensagem.Sucesso)
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = mensagem.Descricao;
+                return Ok(resposta);
+            }
+            if (animais != null && animais.Count > 0)
+            {
+                foreach (Animal animal in animais)
+                {
+                    mensagem = AgendamentosBanhoTosaRepository.TryDeleteByAnimalId(animal.Id);
+                    if (!mensagem.Sucesso)
+                    {
+                        resposta.statusCode = 401;
+                        resposta.MensagemRetorno = mensagem.Descricao;
+                        return Ok(resposta);
+                    }
+                    mensagem = AnimalRepository.TryDelete(animal.Id);
+                    if (!mensagem.Sucesso)
+                    {
+                        resposta.statusCode = 401;
+                        resposta.MensagemRetorno = mensagem.Descricao;
+
+                    }
+                }
+            }
+
+            mensagem = UsuarioRepository.TryDelete(usuarioId);
+            if (!mensagem.Sucesso)
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = mensagem.Descricao;
+                return Ok(resposta);
+            }
+
+            resposta.statusCode = 200;
+            resposta.MensagemRetorno = "Usuário apagado com sucesso";
+
+            return Ok(resposta);
+        }
+
         private ShortGuid ToShortGuid(Guid id)
         {
             ShortGuid idShortGuid = id;
