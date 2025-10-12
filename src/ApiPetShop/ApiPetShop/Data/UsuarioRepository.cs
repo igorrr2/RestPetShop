@@ -20,13 +20,7 @@ namespace ApiPetShop.Repositories
                 using var cmd = new MySqlCommand("Usuario_Add", conexao);
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                
-                var idParam = new MySqlParameter("@p_Id", MySqlDbType.VarChar, 36)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(idParam);
-
+                cmd.Parameters.AddWithValue("@p_Id", usuario.Id);
                 cmd.Parameters.AddWithValue("@p_Nome", usuario.Nome);
                 cmd.Parameters.AddWithValue("@p_Login", usuario.Login);
                 cmd.Parameters.AddWithValue("@p_Senha", usuario.Senha);
@@ -34,7 +28,6 @@ namespace ApiPetShop.Repositories
 
                 cmd.ExecuteNonQuery();
 
-                usuario.Id = Guid.Parse(idParam.Value.ToString());
                 return new Mensagem();
             }
             catch (Exception ex)
