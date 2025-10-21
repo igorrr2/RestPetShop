@@ -42,6 +42,13 @@ namespace ApiPetShop.Controllers
                 return Ok(resposta);
             }
 
+            if (!usuario[0].Ativo)
+            {
+                resposta.statusCode = 401;
+                resposta.MensagemRetorno = "Usuário não está ativo";
+                return Ok(resposta);
+            }
+
             mensagem = Criptografia.Descriptografar(usuario[0].Senha, usuario[0].Id, out string senhaDescriptografada);
             if (!mensagem.Sucesso)
             {
@@ -201,6 +208,7 @@ namespace ApiPetShop.Controllers
             usuario.Nome = solicitacao.NomeUsuario;
             usuario.Login = solicitacao.login;
             usuario.Token = Guid.Empty.ToString();
+            usuario.Ativo = solicitacao.Ativo;
             Criptografia.Criptografar(solicitacao.Senha, usuario.Id, out string senhaCriptografada);
             usuario.Senha = senhaCriptografada;
             Mensagem mensagem = UsuarioRepository.TryAdd(usuario);
@@ -245,6 +253,7 @@ namespace ApiPetShop.Controllers
 
             usuario[0].Nome = solicitacao.NomeUsuario;
             usuario[0].Login = solicitacao.login;
+            usuario[0].Ativo = solicitacao.Ativo;
             mensagem = UsuarioRepository.TryUpdate(usuario[0]);
             if (!mensagem.Sucesso)
             {
@@ -329,7 +338,8 @@ namespace ApiPetShop.Controllers
                    Nome = u.Nome,
                    Login = u.Login,
                    Senha = u.Senha,
-                   Token = u.Token
+                   Token = u.Token,
+                   Ativo = u.Ativo
                })
                .ToList();
 

@@ -9,6 +9,7 @@ namespace ApiPetShop.Models
         public string Login { get; set; }              
         public string Senha { get; set; }              
         public string Token { get; set; }             
+        public bool Ativo { get; set; }             
 
         public Usuario()
         {
@@ -16,6 +17,7 @@ namespace ApiPetShop.Models
             Login = string.Empty;
             Senha = string.Empty;
             Token = string.Empty;
+            Ativo = false;
         }
     }
 }

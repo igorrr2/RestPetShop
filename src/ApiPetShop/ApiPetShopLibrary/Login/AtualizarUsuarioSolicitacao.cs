@@ -17,5 +17,7 @@ namespace ApiPetShopLibrary.Login
         public string ConfirmacaoSenha { get; set; }
 
         public string login { get; set; }
+
+        public bool Ativo { get; set; }
     }
 }

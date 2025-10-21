@@ -13,6 +13,6 @@ namespace ApiPetShopLibrary.Login
 
         public string login { get; set; }
 
-
+        public bool Ativo { get; set; }
     }
 }

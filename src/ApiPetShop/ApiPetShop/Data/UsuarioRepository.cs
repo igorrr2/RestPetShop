@@ -25,6 +25,7 @@ namespace ApiPetShop.Repositories
                 cmd.Parameters.AddWithValue("@p_Login", usuario.Login);
                 cmd.Parameters.AddWithValue("@p_Senha", usuario.Senha);
                 cmd.Parameters.AddWithValue("@p_Token", (object?)usuario.Token ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@p_Ativo", usuario.Ativo ? 1 : 0);
 
                 cmd.ExecuteNonQuery();
 
@@ -58,7 +59,8 @@ namespace ApiPetShop.Repositories
                         Nome = reader["Nome"].ToString(),
                         Login = reader["Login"].ToString(),
                         Senha = reader["Senha"].ToString(),
-                        Token = reader["Token"]?.ToString()
+                        Token = reader["Token"]?.ToString(),
+                        Ativo = reader["Ativo"] != DBNull.Value && Convert.ToBoolean(reader["Ativo"])
                     });
                 }
 
@@ -85,6 +87,7 @@ namespace ApiPetShop.Repositories
                 cmd.Parameters.AddWithValue("@p_Login", usuario.Login ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@p_Senha", usuario.Senha ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@p_Token", usuario.Token ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@p_Ativo", usuario.Ativo ? 1 : 0);
 
                 cmd.ExecuteNonQuery();
                 return new Mensagem();
@@ -136,7 +139,8 @@ namespace ApiPetShop.Repositories
                         Nome = reader["Nome"].ToString(),
                         Login = reader["Login"].ToString(),
                         Senha = reader["Senha"].ToString(),
-                        Token = reader["Token"]?.ToString()
+                        Token = reader["Token"]?.ToString(),
+                        Ativo = reader["Ativo"] != DBNull.Value && Convert.ToBoolean(reader["Ativo"])
                     });
                 }
 
@@ -171,7 +175,8 @@ namespace ApiPetShop.Repositories
                         Nome = reader["Nome"].ToString(),
                         Login = reader["Login"].ToString(),
                         Senha = reader["Senha"].ToString(),
-                        Token = reader["Token"]?.ToString()
+                        Token = reader["Token"]?.ToString(),
+                        Ativo = reader["Ativo"] != DBNull.Value && Convert.ToBoolean(reader["Ativo"])
                     });
                 }
 
@@ -202,7 +207,8 @@ namespace ApiPetShop.Repositories
                         Nome = reader["Nome"].ToString(),
                         Login = reader["Login"].ToString(),
                         Senha = reader["Senha"].ToString(),
-                        Token = reader["Token"]?.ToString()
+                        Token = reader["Token"]?.ToString(),
+                        Ativo = reader["Ativo"] != DBNull.Value && Convert.ToBoolean(reader["Ativo"])
                     });
                 }
 
